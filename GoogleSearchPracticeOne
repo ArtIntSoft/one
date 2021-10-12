@@ -1,0 +1,92 @@
+org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+
+public class SearchGooglePractice1 {
+    //This class prints # of the links and # of results . Total number of links in search result page : 171
+    //Total number of results and time taken : About 5,600,000 results (0.60 seconds)
+
+    //This method will take a link and convert it to a String and check response code
+    public static void validateLink(String link) {
+        //if link NOT null
+        if (link != null) {
+            try {
+                //Create a URL object from the string 'link'
+                URL url = new URL(link);
+                //Using the URL object create a connection and store it in HttpURLConnection by casting it
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("HEAD");
+                con.connect();
+                int responseCode = con.getResponseCode();
+                if (responseCode >= 400) {
+                    System.out.println("ERROR: Broken link. " + responseCode + " : " + link);
+                } else {
+                    System.out.println("PASS: Response code: " + responseCode + " : " + link);
+                }
+            } catch (MalformedURLException e) {
+                System.out.println("Malformed URL : " + link);
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println("Exception Creating Connection : " + link);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        String aut = "https://google.com";
+
+        System.setProperty("webdriver.chrome.driver", "C:/dev/webdrivers/chrome/oct/chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+
+        //step 1 - open browser and navigate to AUT
+        driver.get(aut);
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("input[name='q']")).sendKeys("selenium webdriver");
+        //Send keystrokes
+        driver.findElement(By.cssSelector("input[name='q']")).sendKeys(Keys.ENTER);
+        // pause execution for 1.5 seconds for search result to come back
+        Thread.sleep(1000);
+
+        List<WebElement> links = driver.findElements(By.tagName("a"));
+        //iterate all the links to check if it is valid
+        // First - create an iterator for the List variable name 'links'
+        Iterator<WebElement> it = links.listIterator();
+        int numLinks = 0;
+        //loop through the list using the iterator
+        while (it.hasNext()) {
+            numLinks++;
+            System.out.println("link # " + numLinks + " : ");
+            SearchGooglePractice1.validateLink(it.next().getAttribute("href"));
+        }
+        //while (it.hasNext()) {
+        //numLinks++;
+        //GoogleSearchV2.validateLink(it.next().getAttribute("href"));
+        //System.out.println("number of links checked: " + numLinks);
+        //}
+        System.out.println("Total number of links in search result page : " + links.size());
+        String resultStats = driver.findElement(By.cssSelector("#result-stats")).getText();
+        System.out.println("Total number of results and time taken : " + resultStats);
+
+        List<StringBuilder> resultCount = SearchGooglePractice2.extractInteger(resultStats);
+        for (int i = 0; i < resultCount.size(); i++) {
+            System.out.println("Total number of result returned : " + resultCount.get(i));
+        }
+        if (Integer.parseInt(resultCount.get(0).toString()) < 5000000) {
+            System.out.println("FAIL: Result count is lower than expected");
+        } else {
+            System.out.println("PASS: Result count is higher than expected");
+
+        }
+    }
+}
