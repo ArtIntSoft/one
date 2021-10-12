@@ -71,7 +71,7 @@ public class VostokClassica {
         System.out.println("\nThe gray strip color is: \n" + grayStrip);
         String bckgrnd = driver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[2]/div/div[2]/div[2]")).getCssValue("background-color");
         System.out.println("\nBack ground of grey strip is: \n" + bckgrnd);
-        System.out.println(ANSI_PURPLE + "\nБългария на три морета - ΜΟΛΩΝ ΛΑΒΕ");
+        System.out.println(ANSI_PURPLE + "\nJustfiguringoutstuff");
         Thread.sleep(5000);
         driver.close();
     }
