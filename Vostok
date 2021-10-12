@@ -1,0 +1,78 @@
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
+public class VostokClassica {
+    public static String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+ 
+    public static void main(String[] args) throws InterruptedException {
+
+        System.setProperty("webdriver.chrome.driver", "C:/dev/webdrivers/chrome/oct/chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        driver.get("https://meranom.com/en/");
+        driver.manage().window().maximize();
+
+       String expected = "Vostok watch Amphibian, Komandirskie, Retro buy with worldwide delivery.";
+
+        String actualTitle = driver.getTitle();
+        if (expected.equals(actualTitle)) {
+            System.out.println((ANSI_CYAN) + "\n✯ TEST PASSED. VALUE MATCH THE PAGE TITLE ✯");
+            System.out.println((ANSI_CYAN) + "Actual title is: " + (ANSI_PURPLE) + actualTitle);
+            System.out.println((ANSI_CYAN) + "Expected title is: " + (ANSI_PURPLE) + expected);
+        } else {
+            System.out.println(ANSI_RED + "\n✯ TEST FAILED. VALUE DOES NOT MATCH THE PAGE TITLE ✯");
+            System.out.println((ANSI_RED) + "Actual title is: " + (ANSI_PURPLE) + actualTitle);
+            System.out.println((ANSI_RED) + "Expected title is: " + (ANSI_PURPLE) + expected);
+        }
+
+        driver.findElement(By.linkText("Shop")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.linkText("Vostok Classica")).click();
+        Thread.sleep(1000);
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0, 900)");
+        Thread.sleep(500);
+
+        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        String timeStamp = new SimpleDateFormat("yyMMdd_HHmmss_SSS").format(Calendar.getInstance().getTime());
+        try {
+            FileUtils.copyFile(screenshot, new File("C:/Users/obres/Desktop/ss/" + timeStamp + ".png"));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        String targetText2 = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div[2]/div[2]/div[3]/div[4]/div/div[2]/div[5]/a")).getText();
+        System.out.println((ANSI_BLUE + "\nActual Text and Status for Classica 690B24 is:") + ("\n✯✯✯✯✯ " + targetText2 + " ✯✯✯✯✯"));
+        String targetText3 = driver.findElement(By.xpath("//*[@id='mfilter-content-container']/div[3]/div[6]/div/div[2]/div[5]/a")).getText();
+        System.out.println((ANSI_BLUE + "\nActual Text and Status for Classica 690B22B is:") + ("\n✯✯✯✯✯ " + targetText3 + " ✯✯✯✯✯"));
+        String targetText4 = driver.findElement(By.linkText("690B25B")).getText();
+        System.out.println((ANSI_BLUE + "\nActual Text and Status for Classica 690B25B is:") + ("\n✯✯✯✯✯ " + targetText4 + " ✯✯✯✯✯"));
+        String targetText1 = driver.findElement(By.xpath("/html/body/div[2]/div[3]/div[2]/div[2]/div[3]/div[5]/div/div[2]/div[5]/a")).getText();
+        System.out.println((ANSI_BLUE + "\nActual Text and Status for Classica 690B24B is:") + ("\n✯✯✯✯✯ " + targetText1 + " ✯✯✯✯✯"));
+        driver.findElement(By.xpath("//*[@id='currency']/div/div[1]")).click();
+        driver.findElement(By.id("USD")).click();
+        String price = driver.findElement(By.xpath("//*[@id='mfilter-content-container']/div[3]/div[5]/div/div[2]/div[3]")).getText();
+        System.out.println("\nPrice is : " + price);
+
+        driver.findElement(By.linkText("Classica 690B24B")).click();
+        String VostokTitleColor = driver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[2]/div/div[2]/h1")).getCssValue("color");
+        System.out.println("\nVostok Title Color of words is: \n" + VostokTitleColor);
+        String grayStrip = driver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[2]/div/div[2]/div[2]")).getCssValue("color");
+        System.out.println("\nThe gray strip color is: \n" + grayStrip);
+        String bckgrnd = driver.findElement(By.xpath("/html/body/div[1]/div[3]/div/div[2]/div/div[2]/div[2]")).getCssValue("background-color");
+        System.out.println("\nBack ground of grey strip is: \n" + bckgrnd);
+        System.out.println(ANSI_PURPLE + "\nБългария на три морета - ΜΟΛΩΝ ΛΑΒΕ");
+        Thread.sleep(5000);
+        driver.close();
+    }
+}
